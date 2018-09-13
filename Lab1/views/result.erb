@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Lab1 Моделирование</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+  </head>
+  <body>
+    <center>
+      <h3>Формирование равномерно распределенных случайных величин</h3>
+      <h4>Результат</h4>
+    </center>
+    <div class="ml-3">
+      <h6>Мат ожидание <%=@math_value%>
+      </h6>
+      <h6>Дисперсия <%=@dispersion%>
+      </h6>
+      <h6>Среднеквадратическое отклонение <%=@standard_deviation%>
+      </h6>
+      <h6>Оценка равномерности распределения по косвенным признакам <%=@indirect_indications%>
+      </h6>
+      <h6>Длина периода <%=@period_length%>
+      </h6>
+      <h6>Длина отрезка апериодичности <%=@aperiodic_section_length%>
+      </h6>
+    </div>
+    <hr>
+    <div class="ml-3">
+      <canvas id="bar-chart" width="800" height="200"></canvas>
+      <script type="text/javascript">
+        // No time to explain. Sorry for use JS in HTML :-(
+        function getRandomColor() {
+          var length = 6;
+          var chars = '0123456789ABCDEF';
+          var hex = '#';
+          while(length--) hex += chars[(Math.random() * 16) | 0];
+          return hex;
+        }
+
+        labels_array = []
+        color_array = []
+        for (let i = 0; i < <%=@returnings_value.count%>; i++) {
+          labels_array.push(((i * (1/<%=@returnings_value.count%>)).toFixed(2).toString()))
+          color_array.push(getRandomColor())
+        }
+
+        new Chart(document.getElementById("bar-chart"), {
+          type: 'bar',
+          data: {
+            labels: labels_array,
+            datasets: [
+              {
+                backgroundColor: color_array,
+                data: <%=@returnings_value%>
+              }
+            ]
+          },
+          options: {
+            legend: {
+              display: false
+            },
+            title: {
+              display: true
+            }
+          }
+        });
+      </script>
+      <div class="ml-3 mb-3 mt-3">
+        <a href="/">Переход к вводу данных</a>
+      </div>
+    </div>
+  </body>
+</html>
