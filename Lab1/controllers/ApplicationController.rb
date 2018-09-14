@@ -8,20 +8,21 @@ class ApplicationController < Sinatra::Base
   end
 
   post '/' do
-    # Enter input data
-    a = params[:a]
-    r0 = params[:r0]
-    m0 = params[:m0]
+    a = params[:a].to_i
+    r0 = params[:R0].to_i
+    m0 = params[:m0].to_i
     # Proccessing module
-    
+
     # Output data
-    @returnings_value = []  # Array.new(21) { rand(100...3000) }
-    @math_value = 0
-    @dispersion = 0
-    @standard_deviation = 0
-    @indirect_indications = 0
-    @period_length = 0
-    @aperiodic_section_length = 0
+    sequence = Algorithm::Lehmer.new(a, m0, r0).sequence
+    @returnings_value = []#Algorithm::Chart.build_chart(sequence)
+    stats = Algorithm::Stats.new(sequence)
+    @math_value = stats.instance_variable_get(:@expected)
+    @dispersion = stats.instance_variable_get(:@dispersion)
+    @standard_deviation = stats.instance_variable_get(:@standardDeviation)
+    @indirect_indications = stats.instance_variable_get(:@indirectEvaluation)
+    @period_length = stats.instance_variable_get(:@period_length)
+    @aperiodic_section_length = stats.instance_variable_get(:@aperiodicity)
     erb :result
   end
 end
