@@ -11,11 +11,9 @@ class ApplicationController < Sinatra::Base
     a = params[:a].to_i
     r0 = params[:R0].to_i
     m0 = params[:m0].to_i
-    # Proccessing module
-
-    # Output data
     sequence = Algorithm::Lehmer.new(a, m0, r0).sequence
-    @returnings_value = []#Algorithm::Chart.build_chart(sequence)
+    @returnings_value = Algorithm::Chart.build_chart(sequence)
+
     stats = Algorithm::Stats.new(sequence)
     @math_value = stats.instance_variable_get(:@expected)
     @dispersion = stats.instance_variable_get(:@dispersion)
@@ -23,6 +21,7 @@ class ApplicationController < Sinatra::Base
     @indirect_indications = stats.instance_variable_get(:@indirectEvaluation)
     @period_length = stats.instance_variable_get(:@period_length)
     @aperiodic_section_length = stats.instance_variable_get(:@aperiodicity)
+
     erb :result
   end
 end

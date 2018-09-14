@@ -39,8 +39,8 @@
 
         labels_array = []
         color_array = []
-        for (let i = 0; i < <%=@returnings_value.count%>; i++) {
-          labels_array.push(((i * (1/<%=@returnings_value.count%>)).toFixed(2).toString()))
+        for (let i = 1; i < <%=@returnings_value.count%>; i++) {
+          labels_array.push(((i * (1/<%=@returnings_value.count - 1%>)).toFixed(2).toString()))
           color_array.push(getRandomColor())
         }
 
