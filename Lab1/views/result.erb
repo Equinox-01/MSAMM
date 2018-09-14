@@ -37,21 +37,16 @@
           return hex;
         }
 
-        labels_array = []
         color_array = []
-        for (let i = 1; i < <%=@returnings_value.count%>; i++) {
-          labels_array.push(((i * (1/<%=@returnings_value.count - 1%>)).toFixed(2).toString()))
-          color_array.push(getRandomColor())
-        }
-
+        for (let i = 1; i < <%=@values_histogram.count%>; i++) { color_array.push(getRandomColor()) }
         new Chart(document.getElementById("bar-chart"), {
           type: 'bar',
           data: {
-            labels: labels_array,
+            labels: <%=@steps_histogram%>,
             datasets: [
               {
                 backgroundColor: color_array,
-                data: <%=@returnings_value%>
+                data: <%=@values_histogram%>
               }
             ]
           },

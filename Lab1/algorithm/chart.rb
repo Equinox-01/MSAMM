@@ -22,8 +22,8 @@ module Algorithm
 
       frequencies = Array.new(INTERVALS + 1)
       (0..INTERVALS).each { |index| frequencies[index] = numOfHits[index].to_f / 1000000.to_f }
-      result = []
-      (0..INTERVALS).each { |index| result << frequencies[index] }
+      result = {}
+      (0..INTERVALS).each { |index| result.merge!(((min + delta * (index + 1)).round(3)) => frequencies[index]) }
       result
     end
   end

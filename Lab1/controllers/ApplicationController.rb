@@ -12,7 +12,13 @@ class ApplicationController < Sinatra::Base
     r0 = params[:R0].to_i
     m0 = params[:m0].to_i
     sequence = Algorithm::Lehmer.new(a, m0, r0).sequence
-    @returnings_value = Algorithm::Chart.build_chart(sequence)
+    graph_hash = Algorithm::Chart.build_chart(sequence)
+    @steps_histogram = []
+    @values_histogram = []
+    graph_hash.each_with_index { |key, value| @steps_histogram << key; @values_histogram << value }
+
+    @steps_histogram = graph_hash.keys
+    @values_histogram = graph_hash.values
 
     stats = Algorithm::Stats.new(sequence)
     @math_value = stats.instance_variable_get(:@expected)
