@@ -1,4 +1,3 @@
-require "awesome_print"
 require 'pry'
 require_relative "handler.rb"
 require_relative "queue.rb"
@@ -18,18 +17,18 @@ $states_probability = {
 }
 
 def input_data
-  # puts('Введите ρ параметр')
-  # $p = gets.chomp.to_f
-  # puts('Введите π1 параметр')
-  # $pi1 = gets.chomp.to_f
-  # puts('Введите π2 параметр')
-  # $pi2 = gets.chomp.to_f
-  # puts('Введите количество тактов')
-  # $ticks = gets.chomp.to_i
-  $p = 0.75
-  $pi1 = 0.8
-  $pi2 = 0.5
-  $ticks = 10000
+  puts('Введите ρ параметр')
+  $p = gets.chomp.to_f
+  puts('Введите π1 параметр')
+  $pi1 = gets.chomp.to_f
+  puts('Введите π2 параметр')
+  $pi2 = gets.chomp.to_f
+  puts('Введите количество тактов')
+  $ticks = gets.chomp.to_i
+  # $p = 0.75
+  # $pi1 = 0.8
+  # $pi2 = 0.5
+  # $ticks = 100000
 end
 
 def init
@@ -48,20 +47,27 @@ def init
 end
 
 def proccess
-  (1..$ticks).each do
-    $states_probability['0000'] += 1.to_f / $ticks if (!$source.blocked? && $queue.requests.count.zero? && !$handler_1.busy? && !$handler_2.busy?)
-    $states_probability['0001'] += 1.to_f / $ticks if (!$source.blocked? && $queue.requests.count.zero? && !$handler_1.busy? && $handler_2.busy?)
-    $states_probability['0010'] += 1.to_f / $ticks if (!$source.blocked? && $queue.requests.count == 1 && $handler_1.busy? && !$handler_2.busy?)
-    $states_probability['0011'] += 1.to_f / $ticks if (!$source.blocked? && $queue.requests.count == 1 && $handler_1.busy? && $handler_2.busy?)
-    $states_probability['0111'] += 1.to_f / $ticks if (!$source.blocked? && $queue.requests.count == 1 && $handler_1.busy? && $handler_2.busy?)
-    $states_probability['0211'] += 1.to_f / $ticks if (!$source.blocked? && $queue.requests.count == 2 && $handler_1.busy? && $handler_2.busy?)
-    $states_probability['1211'] += 1.to_f / $ticks if ($source.blocked? && $queue.requests.count == 2 && $handler_1.busy? && $handler_2.busy?)
-    $source.generate_request
+  (1..$ticks).each do |index|
+    $states_probability['0000'] += 1.to_f / $ticks if (!$source.blocked && $queue.requests.zero? && !$handler_1.busy && !$handler_2.busy)
+    $states_probability['0001'] += 1.to_f / $ticks if (!$source.blocked && $queue.requests.zero? && $handler_1.busy && !$handler_2.busy)
+    $states_probability['0010'] += 1.to_f / $ticks if (!$source.blocked && $queue.requests.zero? && !$handler_1.busy && $handler_2.busy)
+    $states_probability['0011'] += 1.to_f / $ticks if (!$source.blocked && $queue.requests.zero? && $handler_1.busy && $handler_2.busy)
+    $states_probability['0111'] += 1.to_f / $ticks if (!$source.blocked && $queue.requests == 1 && $handler_1.busy && $handler_2.busy)
+    $states_probability['0211'] += 1.to_f / $ticks if (!$source.blocked && $queue.requests == 2 && $handler_1.busy && $handler_2.busy)
+    $states_probability['1211'] += 1.to_f / $ticks if ($source.blocked && $queue.requests == 2 && $handler_1.busy && $handler_2.busy)
+    command_to_move
   end
 end
 
+def command_to_move
+  $source.generate_request
+  $queue.add
+  $handler_1.proccess
+  $handler_2.proccess
+end
+
 def output_data
-  $states_probability.each { |key, value| puts "Вероятность состояния #{key} = #{"%1.5f" % value};" }
+  $states_probability.each { |key, value| puts "Вероятность состояния #{key} = #{value};" }
 end
 
 def main
