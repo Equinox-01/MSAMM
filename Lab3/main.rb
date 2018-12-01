@@ -3,6 +3,7 @@ require_relative "handler.rb"
 require_relative "queue.rb"
 require_relative "source.rb"
 require_relative "request.rb"
+require_relative "target_math.rb"
 
 QUEUE_SIZE = 2
 
@@ -67,7 +68,12 @@ def command_to_move
 end
 
 def output_data
-  $states_probability.each { |key, value| puts "Вероятность состояния #{key} = #{value};" }
+  $states_probability.each { |key, value| puts "Вероятность состояния #{key} = %.5f;" % value }
+
+  math = TargetMath.new
+  puts("Среднее время пребывания заявки в системе %.5f" %math.average_time_spent_in_system($p, $states_probability['1211'], $states_probability))
+  puts("Среднее число заявок находящихся в системе %.5f" % math.average_number_of_request_in_system($states_probability))
+  puts("Абсолютная пропускная способность %.5f" % math.absolute_bandwidth($p, $states_probability['1211']))
 end
 
 def main
