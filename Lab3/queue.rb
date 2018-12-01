@@ -14,9 +14,9 @@ class Queue
 
   def add
     if @requests < 2
-      if $source.blocked
+      if @input[0].blocked
         @requests += 1
-        $source.blocked = false
+        @input[0].blocked = false
       end
     end
   end
