@@ -9,6 +9,22 @@ class Queue
   end
 
   def full?
-    requests.size >= @size
+    @requests.count == @size
+  end
+
+  def add(request)
+    @requests << request
+  end
+
+  def send_to_handlers
+    unless @output[0].busy?
+      request = @requests.shift
+      @output[0].request = request
+    end
+    unless @output[1].busy?
+      request = @requests.shift
+      @output[1].request = request
+    end
+    @output.each {|handler| handler.proccess}
   end
 end

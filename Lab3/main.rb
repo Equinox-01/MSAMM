@@ -29,7 +29,7 @@ def input_data
   $p = 0.75
   $pi1 = 0.8
   $pi2 = 0.5
-  $ticks = 10
+  $ticks = 10000
 end
 
 def init
@@ -49,13 +49,19 @@ end
 
 def proccess
   (1..$ticks).each do
-    # binding.pry
+    $states_probability['0000'] += 1.to_f / $ticks if (!$source.blocked? && $queue.requests.count.zero? && !$handler_1.busy? && !$handler_2.busy?)
+    $states_probability['0001'] += 1.to_f / $ticks if (!$source.blocked? && $queue.requests.count.zero? && !$handler_1.busy? && $handler_2.busy?)
+    $states_probability['0010'] += 1.to_f / $ticks if (!$source.blocked? && $queue.requests.count == 1 && $handler_1.busy? && !$handler_2.busy?)
+    $states_probability['0011'] += 1.to_f / $ticks if (!$source.blocked? && $queue.requests.count == 1 && $handler_1.busy? && $handler_2.busy?)
+    $states_probability['0111'] += 1.to_f / $ticks if (!$source.blocked? && $queue.requests.count == 1 && $handler_1.busy? && $handler_2.busy?)
+    $states_probability['0211'] += 1.to_f / $ticks if (!$source.blocked? && $queue.requests.count == 2 && $handler_1.busy? && $handler_2.busy?)
+    $states_probability['1211'] += 1.to_f / $ticks if ($source.blocked? && $queue.requests.count == 2 && $handler_1.busy? && $handler_2.busy?)
     $source.generate_request
   end
 end
 
 def output_data
-  $states_probability.each { |key, value| puts "Вероятность состояния #{key} = #{value};" }
+  $states_probability.each { |key, value| puts "Вероятность состояния #{key} = #{"%1.5f" % value};" }
 end
 
 def main
