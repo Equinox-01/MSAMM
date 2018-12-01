@@ -8,25 +8,25 @@ class Handler
   end
 
   def proccess
-    unless @busy
-      if $queue.requests >= 1
-        @busy = true
-        $queue.requests -= 1
-        if $source.blocked
-          $source.blocked = false
-          $queue.request += 1
+    if @busy
+      if rand <= @probability
+        @busy = false
+        if @input[0].requests >= 1
+          @busy = true
+          @input[0].requests -= 1
+          if @input[0].input[0].blocked
+            @input[0].input[0].blocked = false
+            @input[0].requests += 1
+          end
         end
       end
     else
-      if rand <= @probability
-        @busy = false
-        if $queue.requests >= 1
-          @busy = true
-          $queue.requests -= 1
-          if $source.blocked
-            $source.blocked = false
-            $queue.requests += 1
-          end
+      if @input[0].requests >= 1
+        @busy = true
+        @input[0].requests -= 1
+        if @input[0].input[0].blocked
+          @input[0].input[0].blocked = false
+          @input[0].request += 1
         end
       end
     end

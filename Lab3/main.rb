@@ -1,9 +1,8 @@
 require 'pry'
-require_relative "handler.rb"
-require_relative "queue.rb"
-require_relative "source.rb"
-require_relative "request.rb"
-require_relative "target_math.rb"
+require_relative 'handler.rb'
+require_relative 'queue.rb'
+require_relative 'source.rb'
+require_relative 'target_math.rb'
 
 QUEUE_SIZE = 2
 
@@ -48,14 +47,14 @@ def init
 end
 
 def proccess
-  (1..$ticks).each do |index|
-    $states_probability['0000'] += 1.to_f / $ticks if (!$source.blocked && $queue.requests.zero? && !$handler_1.busy && !$handler_2.busy)
-    $states_probability['0001'] += 1.to_f / $ticks if (!$source.blocked && $queue.requests.zero? && $handler_1.busy && !$handler_2.busy)
-    $states_probability['0010'] += 1.to_f / $ticks if (!$source.blocked && $queue.requests.zero? && !$handler_1.busy && $handler_2.busy)
-    $states_probability['0011'] += 1.to_f / $ticks if (!$source.blocked && $queue.requests.zero? && $handler_1.busy && $handler_2.busy)
-    $states_probability['0111'] += 1.to_f / $ticks if (!$source.blocked && $queue.requests == 1 && $handler_1.busy && $handler_2.busy)
-    $states_probability['0211'] += 1.to_f / $ticks if (!$source.blocked && $queue.requests == 2 && $handler_1.busy && $handler_2.busy)
-    $states_probability['1211'] += 1.to_f / $ticks if ($source.blocked && $queue.requests == 2 && $handler_1.busy && $handler_2.busy)
+  (1..$ticks).each do |_index|
+    $states_probability['0000'] += 1.to_f / $ticks if !$source.blocked && $queue.requests.zero? && !$handler_1.busy && !$handler_2.busy
+    $states_probability['0001'] += 1.to_f / $ticks if !$source.blocked && $queue.requests.zero? && $handler_1.busy && !$handler_2.busy
+    $states_probability['0010'] += 1.to_f / $ticks if !$source.blocked && $queue.requests.zero? && !$handler_1.busy && $handler_2.busy
+    $states_probability['0011'] += 1.to_f / $ticks if !$source.blocked && $queue.requests.zero? && $handler_1.busy && $handler_2.busy
+    $states_probability['0111'] += 1.to_f / $ticks if !$source.blocked && $queue.requests == 1 && $handler_1.busy && $handler_2.busy
+    $states_probability['0211'] += 1.to_f / $ticks if !$source.blocked && $queue.requests == 2 && $handler_1.busy && $handler_2.busy
+    $states_probability['1211'] += 1.to_f / $ticks if $source.blocked && $queue.requests == 2 && $handler_1.busy && $handler_2.busy
     command_to_move
   end
 end
@@ -68,12 +67,12 @@ def command_to_move
 end
 
 def output_data
-  $states_probability.each { |key, value| puts "Вероятность состояния #{key} = %.5f;" % value }
+  $states_probability.each { |key, value| puts format("Вероятность состояния #{key} = %.5f;", value) }
 
   math = TargetMath.new
-  puts("Среднее время пребывания заявки в системе %.5f" %math.average_time_spent_in_system($p, $states_probability['1211'], $states_probability))
-  puts("Среднее число заявок находящихся в системе %.5f" % math.average_number_of_request_in_system($states_probability))
-  puts("Абсолютная пропускная способность %.5f" % math.absolute_bandwidth($p, $states_probability['1211']))
+  puts(format('Среднее время пребывания заявки в системе %.5f', math.average_time_spent_in_system($p, $states_probability['1211'], $states_probability)))
+  puts(format('Среднее число заявок находящихся в системе %.5f', math.average_number_of_request_in_system($states_probability)))
+  puts(format('Абсолютная пропускная способность %.5f', math.absolute_bandwidth($p, $states_probability['1211'])))
 end
 
 def main

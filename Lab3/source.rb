@@ -8,8 +8,6 @@ class Source
   end
 
   def generate_request
-    unless blocked
-      @blocked = rand <= @probability
-    end
+    @blocked = rand <= @probability unless blocked
   end
 end
