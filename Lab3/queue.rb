@@ -5,26 +5,19 @@ class Queue
     @size = size
     @input = []
     @output = []
-    @requests = []
+    @requests = 0
   end
 
   def full?
     @requests.count == @size
   end
 
-  def add(request)
-    @requests << request
-  end
-
-  def send_to_handlers
-    unless @output[0].busy?
-      request = @requests.shift
-      @output[0].request = request
+  def add
+    if @requests < 2
+      if $source.blocked
+        @requests += 1
+        $source.blocked = false
+      end
     end
-    unless @output[1].busy?
-      request = @requests.shift
-      @output[1].request = request
-    end
-    @output.each {|handler| handler.proccess}
   end
 end
