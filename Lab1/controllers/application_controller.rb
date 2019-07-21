@@ -2,7 +2,9 @@ require 'uri'
 require 'net/https'
 
 class ApplicationController < Sinatra::Base
+  set :public_folder, 'public'
   set :views, File.expand_path(File.join(__FILE__, '../../views'))
+
   get '/' do
     erb :index
   end

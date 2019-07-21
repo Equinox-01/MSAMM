@@ -4,17 +4,14 @@ source 'https://rubygems.org'
 
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-gem 'gruff'
 gem 'shotgun'
 gem 'sinatra'
+
 group :development, :test do
   gem 'pry'
   gem 'pry-nav'
 end
 group :test do
-  gem 'rspec-sinatra'
-  gem 'rack-test'
-  gem 'reek'
-  gem 'rspec'
   gem 'rubocop'
+  gem 'rspec'
 end

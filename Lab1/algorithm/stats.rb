@@ -1,5 +1,6 @@
 module Algorithm
   class Stats
+    MEASURE_ROUNDING = 6
     def initialize(sequence)
       @sequence = sequence
       sum = sequence.sum
@@ -12,6 +13,7 @@ module Algorithm
       @period_length = length_of_period
       @aperiodicity = length_of_aperiodism(@period_length)
     end
+    # Take all values to methods & memoized
 
     def amount_of_pairs_for_indirectevaluation
       amount = 0

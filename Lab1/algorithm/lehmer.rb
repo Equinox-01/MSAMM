@@ -12,11 +12,10 @@ module Algorithm
       sequence = Array.new(AMOUNT)
       rn = (@a * @r0) % @m
       sequence[0] = rn.to_f / @m
-      (1..AMOUNT).each do |i|
+      AMOUNT.times.each do |i|
         rn = @a * rn % @m
         sequence[i] = rn.to_f / @m
       end
-      tmp = sequence[0..10]
       sequence
     end
   end
