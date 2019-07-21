@@ -11,7 +11,7 @@ module Algorithm
       (1..INTERVALS).each { |index| intervals[index] = delta + intervals[index - 1] }
       numOfHits = Array.new(INTERVALS).fill(0)
       (0...length).each do |index|
-        (0..INTERVALS).each do |sec_index|
+        INTERVALS.times.each do |sec_index|
           tmp = min + sec_index * delta
           if (sequence[index] >= tmp) && (sequence[index] <= tmp + delta)
             numOfHits[sec_index] += 1
@@ -20,10 +20,10 @@ module Algorithm
         end
       end
 
-      frequencies = Array.new(INTERVALS + 1)
-      (0..INTERVALS).each { |index| frequencies[index] = numOfHits[index].to_f / 1000000.to_f }
+      frequencies = Array.new(INTERVALS)
+      INTERVALS.times.each { |index| frequencies[index] = numOfHits[index].to_f / 1000000.to_f }
       result = {}
-      (0..INTERVALS).each { |index| result.merge!(((min + delta * (index + 1)).round(3)) => frequencies[index]) }
+      INTERVALS.times.each { |index| result.merge!(((min + delta * (index + 1)).round(3)) => frequencies[index]) }
       result
     end
   end
