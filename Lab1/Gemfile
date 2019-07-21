@@ -1,5 +1,17 @@
+# frozen_string_literal: true
+
 source 'https://rubygems.org'
-gem 'sinatra'
+
+git_source(:github) { |repo| "https://github.com/#{repo}.git" }
+
 gem 'shotgun'
-gem 'gruff'
-gem 'pry'
+gem 'sinatra'
+
+group :development, :test do
+  gem 'pry'
+  gem 'pry-nav'
+end
+group :test do
+  gem 'rubocop'
+  gem 'rspec'
+end

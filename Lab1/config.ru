@@ -1,6 +1,7 @@
+$:.unshift File.expand_path("../", __FILE__)
 require 'sinatra/base'
 require 'erb'
-require 'pry'
 
-Dir['./**/*.rb'].each { |file| load(file) }
-map('/') { run ApplicationController }
+Dir["./algorithm/*.rb"].each { |file| require file }
+require_relative 'controllers/application_controller.rb'
+run ApplicationController
