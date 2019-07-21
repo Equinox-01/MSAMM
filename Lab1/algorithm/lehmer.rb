@@ -1,11 +1,11 @@
 module Algorithm
   class Lehmer
-    AMOUNT = 1000000
+    AMOUNT = 1_000_000
 
-    def initialize(a, m, r0)
-      @a = a
-      @m = m
-      @r0 = r0
+    def initialize(a_param, m_param, r0_param)
+      @a = a_param
+      @m = m_param
+      @r0 = r0_param
     end
 
     def sequence

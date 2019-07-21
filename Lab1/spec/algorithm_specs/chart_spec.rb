@@ -8,7 +8,7 @@ RSpec.describe Algorithm::Chart do
 
   subject do
     sequence = Algorithm::Lehmer.new(params[0], params[1], params[2]).sequence
-    described_class.build_chart(sequence)
+    described_class.new(sequence).build_chart
   end
 
   it 'check chart' do
