@@ -21,7 +21,7 @@ module Algorithm
       end
       @dispersion = sum_dispersion.to_f / @sequence.count
       @standard_deviation = Math.sqrt(@dispersion)
-      @indirect_evaluation = 2 * amount_of_pairs_for_indirectevaluation.to_f / @sequence.count
+      @indirect_evaluation = amount_of_pairs_for_indirectevaluation.to_f / @sequence.count
       @period_length = length_of_period
       @aperiodicity = length_of_aperiodism
     end

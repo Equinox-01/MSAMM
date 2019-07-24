@@ -22,7 +22,7 @@ RSpec.describe Algorithm::Stats do
       expect(subject.standard_deviation.round(4)).to eq(0.2236)
     end
     it 'check indirect_indications' do
-      expect(subject.indirect_evaluation).to eq(1.0)
+      expect(subject.indirect_evaluation).to eq(0.5)
     end
     it 'check period_length' do
       expect(subject.period_length).to eq(4)
