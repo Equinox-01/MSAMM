@@ -1,67 +1,37 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Lab2 Моделирование</title>
+    <title>Системный анализ и машинное моделирование № 2</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+    <script src="/javascript/main.js"></script>
   </head>
-  <body>
-    <center>
-      <h3>Формирование случайных чисел с заданным распределением</h3>
-      <h4>Результат</h4>
-    </center>
-    <div class="ml-3">
-      <h6>Мат ожидание <%=@math_value%>
-      </h6>
-      <h6>Дисперсия <%=@dispersion%>
-      </h6>
-      <h6>Среднеквадратическое отклонение <%=@standard_deviation%>
-      </h6>
-      <h6>Оценка равномерности распределения по косвенным признакам 2k/N <%=@indirect_indications%>
-      </h6>
-      <h6>Длина периода <%=@period_length%>
-      </h6>
-      <h6>Длина отрезка апериодичности <%=@aperiodic_section_length%>
-      </h6>
-    </div>
-    <hr>
-    <div class="ml-3">
-      <canvas id="bar-chart" width="800" height="200"></canvas>
-      <script type="text/javascript">
-        // No time to explain. Sorry for use JS in HTML :-(
-        function getRandomColor() {
-          var length = 6;
-          var chars = '0123456789ABCDEF';
-          var hex = '#';
-          while(length--) hex += chars[(Math.random() * 16) | 0];
-          return hex;
-        }
-
-        color_array = []
-        for (let i = 1; i < <%=@values_histogram.count%>; i++) { color_array.push(getRandomColor()) }
-        new Chart(document.getElementById("bar-chart"), {
-          type: 'bar',
-          data: {
-            labels: <%=@steps_histogram%>,
-            datasets: [
-              {
-                backgroundColor: color_array,
-                data: <%=@values_histogram%>
-              }
-            ]
-          },
-          options: {
-            legend: {
-              display: false
-            },
-            title: {
-              display: true
-            }
-          }
-        });
-      </script>
-      <div class="ml-3 mb-3 mt-3">
-        <a href="/">Переход к вводу данных</a>
+  <body onload="DrawChart(<%= @values_histogram %>, <%= @steps_histogram %>)">
+  <div class='container'>
+      <center>
+        <h3>Формирование случайных чисел с заданным распределением</h3>
+      </center>
+      <div class="ml-3">
+        <table class="table table-striped table-bordered">
+          <tr>
+            <td>Мат ожидание</td>
+            <td><%=@math_value%></td>
+          </tr>
+          <tr>
+            <td>Дисперсия</td>
+            <td><%=@dispersion%></td>
+          </tr>
+          <tr>
+            <td>Среднеквадратическое отклонение</td>
+            <td><%=@standard_deviation%></td>
+          </tr>
+        </table>
+      </div>
+      <div class="ml-3">
+        <canvas id="bar-chart" width="800" height="200"></canvas>
+        <div class="ml-3 mb-3 mt-3">
+          <a href="/">Переход к вводу данных</a>
+        </div>
       </div>
     </div>
   </body>
