@@ -23,6 +23,13 @@ function DrawChart(values_histogram, steps_histogram){
       ]
     },
     options: {
+      scales : {
+        yAxes : [{
+            ticks : {
+                beginAtZero : true
+            }   
+        }]
+      },
       legend: {
         display: false
       },

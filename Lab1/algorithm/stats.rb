@@ -21,7 +21,7 @@ module Algorithm
       end
       @dispersion = sum_dispersion.to_f / @sequence.count
       @standard_deviation = Math.sqrt(@dispersion)
-      @indirect_evaluation = amount_of_pairs_for_indirectevaluation.to_f / @sequence.count
+      @indirect_evaluation = amount_of_pairs_for_indirectevaluation
       @period_length = length_of_period
       @aperiodicity = length_of_aperiodism
     end
@@ -32,7 +32,7 @@ module Algorithm
         amount += 1 if (@sequence[index]**2 + @sequence[index + 1]**2).to_f < 1
         index += 2
       end
-      amount
+      2 * amount.to_f / @sequence.count
     end
 
     def length_of_period
