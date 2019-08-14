@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Algorithm
   class Chart
     INTERVALS = 20

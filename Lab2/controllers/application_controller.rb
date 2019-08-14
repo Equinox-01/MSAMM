@@ -1,5 +1,6 @@
 require 'uri'
 require 'net/https'
+require 'net/http'
 
 class ApplicationController < Sinatra::Base
   set :public_folder, 'public'
@@ -10,23 +11,23 @@ class ApplicationController < Sinatra::Base
   end
 
   post '/' do
-    a = params[:a].to_i
-    r0 = params[:R0].to_i
-    m0 = params[:m0].to_i
+    begin
+      Validation.new(params[:distribution], params.reject { |key, value| key == 'distribution' } ).validate
+    rescue => e
+      @exception = e.message
+      @exception = 'Введены неправильные параметры' if @exception == 'ArgumentError'
+      return erb :error
+    end
+    distribution = params[:distribution]
+    sequence = Services::ApplicationService.check_distribution(distribution).new(params).sequence
 
-    sequence = Algorithm::Lehmer.new(a, m0, r0).sequence
+    @math_value = sequence.mean
+    @dispersion = sequence.variance
+    @standard_deviation = sequence.standard_deviation
 
     graph_hash = Algorithm::Chart.new(sequence).build_chart
     @steps_histogram = graph_hash.keys
     @values_histogram = graph_hash.values
-
-    stats = Algorithm::Stats.new(sequence)
-    @math_value = stats.expected
-    @dispersion = stats.dispersion
-    @standard_deviation = stats.standard_deviation
-    @indirect_indications = stats.indirect_evaluation
-    @period_length = stats.period_length
-    @aperiodic_section_length = stats.aperiodicity
 
     erb :result
   end

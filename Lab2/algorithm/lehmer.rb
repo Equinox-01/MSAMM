@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Algorithm
   class Lehmer
     AMOUNT = 1_000_000

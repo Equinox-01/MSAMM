@@ -1,13 +1,11 @@
 # frozen_string_literal: true
 
-require_relative '../../algorithm/lehmer'
 require_relative '../../algorithm/chart'
 
 RSpec.describe Algorithm::Chart do
-  let(:params) { [3, 5, 1] }
+  let(:sequence) { 1_000_000.times.map { rand 0.0..1.0 } }
 
   subject do
-    sequence = Algorithm::Lehmer.new(params[0], params[1], params[2]).sequence
     described_class.new(sequence).build_chart
   end
 

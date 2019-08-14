@@ -4,6 +4,7 @@ source 'https://rubygems.org'
 
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
+gem 'descriptive_statistics'
 gem 'shotgun'
 gem 'sinatra'
 
@@ -12,6 +13,6 @@ group :development, :test do
   gem 'pry-nav'
 end
 group :test do
-  gem 'rubocop'
   gem 'rspec'
+  gem 'rubocop'
 end
