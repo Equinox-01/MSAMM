@@ -7,13 +7,11 @@ require_relative 'target_math.rb'
 QUEUE_SIZE = 2
 
 $states_probability = {
-  '0000' => 0,
-  '0001' => 0,
-  '0010' => 0,
-  '0011' => 0,
-  '0111' => 0,
-  '0211' => 0,
-  '1211' => 0
+  '000' => 0,
+  '001' => 0,
+  '010' => 0,
+  '011' => 0,
+  '111' => 0
 }
 
 def input_data
@@ -25,10 +23,10 @@ def input_data
   $pi2 = gets.chomp.to_f
   puts('Введите количество тактов')
   $ticks = gets.chomp.to_i
-  # $p = 0.75
-  # $pi1 = 0.8
-  # $pi2 = 0.5
-  # $ticks = 100000
+  # $p = 0.3
+  # $pi1 = 0.75
+  # $pi2 = 0.75
+  # $ticks = 1000000
 end
 
 def init
@@ -47,15 +45,14 @@ def init
 end
 
 def proccess
+  step = 1.to_f / $ticks
   (1..$ticks).each do |_index|
-    $states_probability['0000'] += 1.to_f / $ticks if !$source.blocked && $queue.requests.zero? && !$handler_1.busy && !$handler_2.busy
-    $states_probability['0001'] += 1.to_f / $ticks if !$source.blocked && $queue.requests.zero? && $handler_1.busy && !$handler_2.busy
-    $states_probability['0010'] += 1.to_f / $ticks if !$source.blocked && $queue.requests.zero? && !$handler_1.busy && $handler_2.busy
-    $states_probability['0011'] += 1.to_f / $ticks if !$source.blocked && $queue.requests.zero? && $handler_1.busy && $handler_2.busy
-    $states_probability['0111'] += 1.to_f / $ticks if !$source.blocked && $queue.requests == 1 && $handler_1.busy && $handler_2.busy
-    $states_probability['0211'] += 1.to_f / $ticks if !$source.blocked && $queue.requests == 2 && $handler_1.busy && $handler_2.busy
-    $states_probability['1211'] += 1.to_f / $ticks if $source.blocked && $queue.requests == 2 && $handler_1.busy && $handler_2.busy
     command_to_move
+    $states_probability['000'] += step if $queue.requests.zero? && !$handler_1.busy && !$handler_2.busy
+    $states_probability['001'] += step if $queue.requests.zero? && !$handler_1.busy && $handler_2.busy
+    $states_probability['010'] += step if $queue.requests.zero? && $handler_1.busy && !$handler_2.busy
+    $states_probability['011'] += step if $queue.requests.zero? && $handler_1.busy && $handler_2.busy
+    $states_probability['111'] += step if $queue.requests == 1 && $handler_1.busy && $handler_2.busy
   end
 end
 
@@ -68,11 +65,10 @@ end
 
 def output_data
   $states_probability.each { |key, value| puts format("Вероятность состояния #{key} = %.5f;", value) }
-
-  math = TargetMath.new
-  puts(format('Среднее время пребывания заявки в системе %.5f', math.average_time_spent_in_system($p, $states_probability['1211'], $states_probability)))
-  puts(format('Среднее число заявок находящихся в системе %.5f', math.average_number_of_request_in_system($states_probability)))
-  puts(format('Абсолютная пропускная способность %.5f', math.absolute_bandwidth($p, $states_probability['1211'])))
+  # math = TargetMath.new
+  # puts(format('Среднее время пребывания заявки в системе %.5f', math.average_time_spent_in_system($p, $states_probability['1211'], $states_probability)))
+  # puts(format('Среднее число заявок находящихся в системе %.5f', math.average_number_of_request_in_system($states_probability)))
+  # puts(format('Абсолютная пропускная способность %.5f', math.absolute_bandwidth($p, $states_probability['1211'])))
 end
 
 def main

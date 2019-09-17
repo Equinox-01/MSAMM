@@ -13,7 +13,7 @@ class Queue
   end
 
   def add
-    if @requests < 2
+    if @requests < 1
       if @input[0].blocked
         @requests += 1
         @input[0].blocked = false
