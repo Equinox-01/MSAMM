@@ -14,19 +14,25 @@ $states_probability = {
   '111' => 0
 }
 
+$p_failure = 0.0
+$channel_load_1 = 0.0
+$channel_load_2 = 0.0
+$time_in_system = 0.0
+
 def input_data
-  puts('Введите ρ параметр')
-  $p = gets.chomp.to_f
-  puts('Введите π1 параметр')
-  $pi1 = gets.chomp.to_f
-  puts('Введите π2 параметр')
-  $pi2 = gets.chomp.to_f
-  puts('Введите количество тактов')
-  $ticks = gets.chomp.to_i
-  # $p = 0.3
-  # $pi1 = 0.75
-  # $pi2 = 0.75
-  # $ticks = 1000000
+  # puts('Введите ρ параметр')
+  # $p = gets.chomp.to_f
+  # puts('Введите π1 параметр')
+  # $pi1 = gets.chomp.to_f
+  # puts('Введите π2 параметр')
+  # $pi2 = gets.chomp.to_f
+  # puts('Введите количество тактов')
+  # $ticks = gets.chomp.to_i
+  $p = 0.3
+  $pi1 = 0.75
+  $pi2 = 0.75
+  $ticks = 10000
+  $step = 1.to_f / $ticks
 end
 
 def init
@@ -45,30 +51,38 @@ def init
 end
 
 def proccess
-  step = 1.to_f / $ticks
+  $step = 1.to_f / $ticks
   (1..$ticks).each do |_index|
     command_to_move
-    $states_probability['000'] += step if $queue.requests.zero? && !$handler_1.busy && !$handler_2.busy
-    $states_probability['001'] += step if $queue.requests.zero? && !$handler_1.busy && $handler_2.busy
-    $states_probability['010'] += step if $queue.requests.zero? && $handler_1.busy && !$handler_2.busy
-    $states_probability['011'] += step if $queue.requests.zero? && $handler_1.busy && $handler_2.busy
-    $states_probability['111'] += step if $queue.requests == 1 && $handler_1.busy && $handler_2.busy
+    $states_probability['000'] += $step if $queue.requests.zero? && !$handler_1.busy && !$handler_2.busy
+    $states_probability['001'] += $step if $queue.requests.zero? && !$handler_1.busy && $handler_2.busy
+    $states_probability['010'] += $step if $queue.requests.zero? && $handler_1.busy && !$handler_2.busy
+    $states_probability['011'] += $step if $queue.requests.zero? && $handler_1.busy && $handler_2.busy
+    $states_probability['111'] += $step if $queue.requests == 1 && $handler_1.busy && $handler_2.busy
   end
 end
 
 def command_to_move
+  $channel_load_1 += $step if $handler_1.busy
+  $channel_load_2 += $step if $handler_2.busy
+
   $source.generate_request
+
   $queue.add
   $handler_1.proccess
+
   $handler_2.proccess
+  $p_failure += $step if $source.blocked
+
 end
 
 def output_data
   $states_probability.each { |key, value| puts format("Вероятность состояния #{key} = %.5f;", value) }
-  # math = TargetMath.new
-  # puts(format('Среднее время пребывания заявки в системе %.5f', math.average_time_spent_in_system($p, $states_probability['1211'], $states_probability)))
-  # puts(format('Среднее число заявок находящихся в системе %.5f', math.average_number_of_request_in_system($states_probability)))
-  # puts(format('Абсолютная пропускная способность %.5f', math.absolute_bandwidth($p, $states_probability['1211'])))
+
+  puts format("Вероятность отказа: %.5f;", $p_failure)
+  puts format("Вероятность занятости канала 1: %.5f;", $channel_load_1)
+  puts format("Вероятность занятости канала 1: %.5f;", $channel_load_2)
+  puts format("Среднее время пребывания заявки в системе: %.5f;", $time_in_system)
 end
 
 def main
