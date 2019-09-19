@@ -14,6 +14,7 @@ class Handler
         if @input[0].requests >= 1
           @busy = true
           @input[0].requests -= 1
+          $time_in_system += 1
           if @input[0].input[0].blocked
             @input[0].input[0].blocked = false
             @input[0].requests += 1
@@ -24,6 +25,7 @@ class Handler
       if @input[0].requests >= 1
         @busy = true
         @input[0].requests -= 1
+        # $time_in_system += 1
         if @input[0].input[0].blocked
           @input[0].input[0].blocked = false
           @input[0].request += 1

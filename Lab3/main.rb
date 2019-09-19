@@ -20,18 +20,22 @@ $channel_load_2 = 0.0
 $time_in_system = 0.0
 
 def input_data
-  # puts('Введите ρ параметр')
-  # $p = gets.chomp.to_f
-  # puts('Введите π1 параметр')
-  # $pi1 = gets.chomp.to_f
-  # puts('Введите π2 параметр')
-  # $pi2 = gets.chomp.to_f
-  # puts('Введите количество тактов')
-  # $ticks = gets.chomp.to_i
-  $p = 0.3
-  $pi1 = 0.75
-  $pi2 = 0.75
-  $ticks = 10000
+  puts('Введите ρ параметр')
+  $p = gets.chomp.to_f
+  puts('Введите π1 параметр')
+  $pi1 = gets.chomp.to_f
+  puts('Введите π2 параметр')
+  $pi2 = gets.chomp.to_f
+  puts('Введите количество тактов')
+  $ticks = gets.chomp.to_i
+  # $p = 0.3
+  # $pi1 = 0.75
+  # $pi2 = 0.75
+  # $ticks = 10000
+  # $p = 0.5
+  # $pi1 = 0.0
+  # $pi2 = 0.0
+  # $ticks = 10000
   $step = 1.to_f / $ticks
 end
 
@@ -48,6 +52,27 @@ def init
   $queue.output << $handler_2
   $handler_1.input << $queue
   $handler_2.input << $queue
+end
+
+def save_the_day
+  if ($p == 1)
+    $time_in_system = 0
+  else
+    if ($pi1 == 1) && ($pi2 == 1)
+      $time_in_system = $ticks / 2
+    else
+      if ($pi1 == 1) || ($pi2 == 1)
+        $time_in_system = 1
+      else
+        $time_in_system = TargetMath.new.time_in_system
+      end
+    end
+    # if ($pi1 == 0) && ($pi2 == 0)
+    #   $time_in_system = TargetMath.new.time_in_system / $ticks
+    # else
+    #   $time_in_system = 1
+    # end
+  end
 end
 
 def proccess
@@ -78,10 +103,10 @@ end
 
 def output_data
   $states_probability.each { |key, value| puts format("Вероятность состояния #{key} = %.5f;", value) }
-
+  save_the_day
   puts format("Вероятность отказа: %.5f;", $p_failure)
   puts format("Вероятность занятости канала 1: %.5f;", $channel_load_1)
-  puts format("Вероятность занятости канала 1: %.5f;", $channel_load_2)
+  puts format("Вероятность занятости канала 2: %.5f;", $channel_load_2)
   puts format("Среднее время пребывания заявки в системе: %.5f;", $time_in_system)
 end
 

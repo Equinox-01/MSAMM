@@ -13,8 +13,10 @@ class Queue
   end
 
   def add
+    $time_in_system += @requests
     if @requests < 1
       if @input[0].blocked
+
         @requests += 1
         @input[0].blocked = false
       end
