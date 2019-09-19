@@ -1,36 +1,24 @@
 class Handler
-  attr_accessor :input, :busy
+  attr_accessor :input, :output, :data
 
   def initialize(probability)
     @probability = probability
     @input = []
-    @busy = false
+  end
+
+  def empty?
+    @data.nil?
   end
 
   def proccess
-    if @busy
-      if rand <= @probability
-        @busy = false
-        if @input[0].requests >= 1
-          @busy = true
-          @input[0].requests -= 1
-          $time_in_system += 1
-          if @input[0].input[0].blocked
-            @input[0].input[0].blocked = false
-            @input[0].requests += 1
-          end
-        end
-      end
-    else
-      if @input[0].requests >= 1
-        @busy = true
-        @input[0].requests -= 1
-        # $time_in_system += 1
-        if @input[0].input[0].blocked
-          @input[0].input[0].blocked = false
-          @input[0].request += 1
-        end
-      end
+    if rand < @probability && !empty?
+      tmp_request = @data
+      @data = nil
+      output.add(tmp_request)
     end
+  end
+
+  def all_requests_tick
+    @data.tick if @data
   end
 end

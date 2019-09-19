@@ -1,0 +1,8 @@
+Style/GlobalVars:
+  Description: 'Do not introduce global variables.'
+  StyleGuide: '#instance-vars'
+  Reference: 'https://www.zenspider.com/ruby/quickref.html'
+  Enabled: false
+  VersionAdded: '0.13'
+  # Built-in global variables are allowed by default.
+  AllowedVariables: []

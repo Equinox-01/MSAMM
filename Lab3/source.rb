@@ -1,5 +1,5 @@
 class Source
-  attr_accessor :input, :output, :blocked
+  attr_accessor :output, :blocked
 
   def initialize(probability)
     @probability = probability
@@ -8,7 +8,8 @@ class Source
   end
 
   def generate_request
-    $time_in_system += 1 if blocked
-    @blocked = rand <= @probability unless blocked
+    return nil unless rand <= @probability
+
+    Request.new
   end
 end
