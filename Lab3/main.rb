@@ -1,20 +1,25 @@
 require 'pry'
+
 require_relative 'handler.rb'
 require_relative 'queue.rb'
 require_relative 'source.rb'
+require_relative 'request.rb'
+require_relative 'container.rb'
 require_relative 'target_math.rb'
+require_relative 'queue_overflow.rb'
 
-QUEUE_SIZE = 2
+QUEUE_SIZE = 1
 
 $states_probability = {
-  '0000' => 0,
-  '0001' => 0,
-  '0010' => 0,
-  '0011' => 0,
-  '0111' => 0,
-  '0211' => 0,
-  '1211' => 0
+  '000' => 0,
+  '001' => 0,
+  '010' => 0,
+  '011' => 0,
+  '111' => 0
 }
+
+$channel_load_1 = 0
+$channel_load_2 = 0
 
 def input_data
   puts('Введите ρ параметр')
@@ -25,54 +30,91 @@ def input_data
   $pi2 = gets.chomp.to_f
   puts('Введите количество тактов')
   $ticks = gets.chomp.to_i
-  # $p = 0.75
-  # $pi1 = 0.8
-  # $pi2 = 0.5
-  # $ticks = 100000
+  # $p = 0.3
+  # $pi1 = 0.75
+  # $pi2 = 0.75
+  # $ticks = 10_000
+  # $p = 0.5
+  # $pi1 = 0.9
+  # $pi2 = 1
+  # $ticks = 10_000
+  $step = 1.to_f / $ticks
+end
+
+def create_objects
+  $source = Source.new(1.to_f - $p)
+  $queue = Queue.new(QUEUE_SIZE)
+  $handler_1 = Handler.new(1.to_f - $pi1, 1)
+  $handler_2 = Handler.new(1.to_f - $pi2, 2)
+  $declined_container = Container.new
+  $finished_container = Container.new
+
+  $objects = [$queue, $handler_1, $handler_2]
+end
+
+def set_connections
+  $source.output << $queue
+  $source.output << $declined_container
+
+  $queue.input << $source
+  $queue.output << $handler_1
+  $queue.output << $handler_2
+
+  $handler_1.input << $queue
+  $handler_2.input << $queue
+
+  $handler_1.output = $finished_container
+  $handler_2.output = $finished_container
 end
 
 def init
-  $source = Source.new(1.to_f - $p)
-  $queue = Queue.new(QUEUE_SIZE)
-  $handler_1 = Handler.new(1.to_f - $pi1)
-  $handler_2 = Handler.new(1.to_f - $pi2)
+  create_objects
+  set_connections
+end
 
-  $source.output << $queue
-  $queue.input << $source
-
-  $queue.output << $handler_1
-  $queue.output << $handler_2
-  $handler_1.input << $queue
-  $handler_2.input << $queue
+def process_probabilities
+  $states_probability['000'] += $step if $queue.empty? && $handler_1.empty? && $handler_2.empty?
+  $states_probability['001'] += $step if $queue.empty? && $handler_1.empty? && !$handler_2.empty?
+  $states_probability['010'] += $step if $queue.empty? && !$handler_1.empty? && $handler_2.empty?
+  $states_probability['011'] += $step if $queue.empty? && !$handler_1.empty? && !$handler_2.empty?
+  $states_probability['111'] += $step if !$queue.empty? && !$handler_1.empty? && !$handler_2.empty?
 end
 
 def proccess
   (1..$ticks).each do |_index|
-    $states_probability['0000'] += 1.to_f / $ticks if !$source.blocked && $queue.requests.zero? && !$handler_1.busy && !$handler_2.busy
-    $states_probability['0001'] += 1.to_f / $ticks if !$source.blocked && $queue.requests.zero? && $handler_1.busy && !$handler_2.busy
-    $states_probability['0010'] += 1.to_f / $ticks if !$source.blocked && $queue.requests.zero? && !$handler_1.busy && $handler_2.busy
-    $states_probability['0011'] += 1.to_f / $ticks if !$source.blocked && $queue.requests.zero? && $handler_1.busy && $handler_2.busy
-    $states_probability['0111'] += 1.to_f / $ticks if !$source.blocked && $queue.requests == 1 && $handler_1.busy && $handler_2.busy
-    $states_probability['0211'] += 1.to_f / $ticks if !$source.blocked && $queue.requests == 2 && $handler_1.busy && $handler_2.busy
-    $states_probability['1211'] += 1.to_f / $ticks if $source.blocked && $queue.requests == 2 && $handler_1.busy && $handler_2.busy
+    process_probabilities
     command_to_move
   end
 end
 
 def command_to_move
-  $source.generate_request
-  $queue.add
   $handler_1.proccess
   $handler_2.proccess
+  $queue.process
+
+  request = $source.generate_request
+  if request
+    begin
+      $queue.add(request)
+    rescue QueueOverflow
+      $declined_container.add(request)
+    end
+  end
+  $objects.each(&:all_requests_tick)
 end
 
 def output_data
-  $states_probability.each { |key, value| puts format("Вероятность состояния #{key} = %.5f;", value) }
+  time_in_system = 0
+  p = $states_probability
+  $finished_container.data.each { |object| time_in_system += object.time_in_system } unless $finished_container.data.empty?
 
-  math = TargetMath.new
-  puts(format('Среднее время пребывания заявки в системе %.5f', math.average_time_spent_in_system($p, $states_probability['1211'], $states_probability)))
-  puts(format('Среднее число заявок находящихся в системе %.5f', math.average_number_of_request_in_system($states_probability)))
-  puts(format('Абсолютная пропускная способность %.5f', math.absolute_bandwidth($p, $states_probability['1211'])))
+  time_in_system = time_in_system.to_f / $finished_container.size unless $finished_container.data.empty?
+
+  $states_probability.each { |key, value| puts format("Вероятность состояния #{key} = %.5f;", value) }
+  puts format("Вероятность отказа: %.5f;", 1 - ($finished_container.size.to_f + $declined_container.size.to_f) / $ticks)
+  puts format("Вероятность занятости канала 1: %.5f;", $pi1 != 1 ? (p['010'] + p['011'] + p['111']) : 0)
+  puts format("Вероятность занятости канала 2: %.5f;", $pi2 != 1 ? (p['001'] + p['011'] + p['111']) : 0)
+  puts format("Среднее время пребывания заявки в системе: %.5f;", time_in_system)
 end
 
 def main
