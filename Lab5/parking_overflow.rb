@@ -1,0 +1,2 @@
+class ParkingOverflow < StandardError
+end
