@@ -12,16 +12,16 @@ class MathSequence
   end
 
   def self.p0_calculate(m)
-    tmp = 2
-    $n.times.each { |n_tmp| tmp += ($n**n_tmp) / Math.gamma(n_tmp + 1) }
+    tmp = 1
+    (1..$n).each { |n_tmp| tmp += ($n**n_tmp) / Math.gamma(n_tmp + 1) }
     tmp += (($n**$n) / Math.gamma($n + 1)) * m
     tmp = tmp**(-1)
-    add_distortion(tmp)
+    # add_distortion(tmp)
   end
 
   def self.profit(m)
-    tmp = (1 - MathSequence.p_failure(m)) * $intense * $price_process * $n - m * $price_queue
-    add_distortion(tmp)
+    tmp = (1 - (((($p**($n + m)) / (($n**m) * Math.gamma($n + 1))) * MathSequence.p0_calculate(m)).to_f)) * $intense * $price_process * $n - m * $price_queue
+    # add_distortion(tmp)
   end
 
   def self.add_distortion(indata)

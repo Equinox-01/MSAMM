@@ -2,12 +2,13 @@ require 'terminal-table'
 require_relative 'math_sequence'
 require_relative 'parking_overflow'
 require 'pry'
+require 'distribution'
 
 Dir["algorithm/*.rb"].each { |file| require_relative file }
 
+TICKS = 10_000
 $result = {}
-
-TICKS = 10000
+$parking_load = []
 
 def input_data
   # puts('Введите количество обслуживающих каналов')
@@ -32,7 +33,8 @@ end
 def create_objects(m)
   $source = Base::Source.new($intense)
   $parking = Base::Parking.new(m)
-  $dispensers = $n.times.map { Base::Dispenser.new($service_time) }
+  n = -1
+  $dispensers = $n.times.map { n += 1; Base::Dispenser.new(n, $service_time) }
   $declined_container = Base::Container.new
   $finished_container = Base::Container.new
 end
@@ -63,7 +65,13 @@ def record_data(m, p_failure, parking_loading)
 end
 
 def proccess
-  (1..TICKS).each { |_index| command_to_move }
+  $ticks = 0
+  $source.set_time
+  $dispensers.each { |dispenser| dispenser.set_time }
+  while $ticks < TICKS do
+    command_to_move
+    $ticks += 1
+  end
 end
 
 def command_to_move
@@ -78,14 +86,15 @@ def command_to_move
       $declined_container.add(request)
     end
   end
+  $parking_load << $parking.size
 end
 
 def output_data
   $result.each do |key, tmp_table|
     puts "Длина очереди #{key}"
     rows = []
-    rows << ['Вероятность отказа', tmp_table[:p_failure].round(5)]
-    rows << ['Загрузка парковки', tmp_table[:parking_loading].round(5)]
+    rows << ['Вероятность отказа', MathSequence.add_distortion(tmp_table[:p_failure]).round(7)]
+    rows << ['Загрузка парковки', MathSequence.add_distortion(tmp_table[:parking_loading]).round(7)]
     puts Terminal::Table.new(rows: rows)
   end
 end

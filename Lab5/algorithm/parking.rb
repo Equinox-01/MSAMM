@@ -9,6 +9,10 @@ module Base
       @cars = []
     end
 
+    def size
+      @cars.count
+    end
+
     def full?
       @cars.count == @size
     end
@@ -18,13 +22,13 @@ module Base
     end
 
     def process
-      if (output[0].empty? || output[1].empty?) && @cars.count.positive?
+      empty_car_index = -1
+      output.each_with_index { |output_tmp, index| empty_car_index = index if output_tmp.empty? }
+      return if empty_car_index == -1
+
+      if empty_car_index != -1 && @cars.count.positive?
         car = @cars.pop
-        if output[0].empty?
-          output[0].data = car
-          car = nil
-        end
-        output[1].data = car if output[1].empty?
+        output[empty_car_index].data = car if output[empty_car_index].empty?
       end
     end
 
@@ -33,10 +37,6 @@ module Base
 
       @cars << car
       process if @cars.count == 1
-    end
-
-    def all_requests_tick
-      @cars.each(&:tick)
     end
   end
 end

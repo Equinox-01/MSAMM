@@ -7,8 +7,8 @@ module Base
       @finished = false
     end
 
-    def tick
-      @time_in_system += 1 unless @finished
+    def add_time(time)
+      @time_in_system += time unless @finished
     end
 
     def finish

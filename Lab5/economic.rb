@@ -3,12 +3,13 @@ require_relative 'math_sequence'
 require_relative 'parking_overflow'
 require 'pry'
 require "awesome_print"
+require 'distribution'
 
 Dir["algorithm/*.rb"].each { |file| require_relative file }
 
 $result = {}
 
-TICKS = 10000
+TICKS = 100000
 
 def input_data
   # puts('Введите количество обслуживающих каналов')
@@ -40,7 +41,8 @@ end
 def create_objects(m)
   $source = Base::Source.new($intense)
   $parking = Base::Parking.new(m)
-  $dispensers = $n.times.map { Base::Dispenser.new($service_time) }
+  n = -1
+  $dispensers = $n.times.map { n += 1; Base::Dispenser.new(n, $service_time) }
   $declined_container = Base::Container.new
   $finished_container = Base::Container.new
 end
@@ -71,7 +73,13 @@ def record_data(m, p_failure, profit)
 end
 
 def proccess
-  (1..TICKS).each { |_index| command_to_move }
+  $ticks = 0
+  $source.set_time
+  $dispensers.each { |dispenser| dispenser.set_time }
+  while $ticks < TICKS do
+    command_to_move
+    $ticks += 1
+  end
 end
 
 def command_to_move

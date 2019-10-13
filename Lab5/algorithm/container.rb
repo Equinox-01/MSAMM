@@ -14,9 +14,5 @@ module Base
     def size
       @data.count
     end
-
-    def all_requests_tick
-      @data.each { |car| car.tick }
-    end
   end
 end
